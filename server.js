@@ -87,7 +87,27 @@ app.post('/api/insert', (req, res) => {
 app.put('/api/update/:id', (req, res) => {
     const { name, email } = req.body;
     const { id } = req.params;
-    const sqlUpdate = 'UPDATE student SET name = ?, email = ? WHERE id = ?';
+    if(!name || !email){
+        return res.status(400).send({
+            'message': 'All fields are required', 
+            'status': 400, 
+            'success': false
+        });
+    }
+    const checkQuery = 'SELECT * FROM student WHERE email = ? AND id != ?';
+    db.query(checkQuery, [email, id], (err, result) => {
+        if(err){
+            console.log(err);
+        }else{
+            if(result.length > 0){
+                return res.status(409).send({
+                    'message': 'Email already exists', 
+                    'status': 409, 
+                    'success': false
+                });
+            }
+        }
+        const sqlUpdate = 'UPDATE student SET name = ?, email = ? WHERE id = ?';
     db.query(sqlUpdate, [name, email, id], (err, result) => {
         if (err) {
             console.log(err);
@@ -104,6 +124,8 @@ app.put('/api/update/:id', (req, res) => {
             });
         }
     });
+    });
+    
 });
 //delete Api
 app.delete('/api/delete/:id', (req, res) => {
