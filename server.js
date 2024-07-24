@@ -83,6 +83,49 @@ app.post('/api/insert', (req, res) => {
     });
     
 });
+//update Api 
+app.put('/api/update/:id', (req, res) => {
+    const { name, email } = req.body;
+    const { id } = req.params;
+    const sqlUpdate = 'UPDATE student SET name = ?, email = ? WHERE id = ?';
+    db.query(sqlUpdate, [name, email, id], (err, result) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send({
+                'message': 'Error', 
+                'status': 500, 
+                'success': false
+            });
+        } else {
+            res.status(200).send({
+                'message': 'Data updated successfully', 
+                'status': 200, 
+                'success': true
+            });
+        }
+    });
+});
+//delete Api
+app.delete('/api/delete/:id', (req, res) => {
+    const { id } = req.params;
+    const sqlDelete = 'DELETE FROM student WHERE id = ?';
+    db.query(sqlDelete, [id], (err, result) => {
+        if (err) {  
+            console.log(err);
+            res.status(500).send({
+                'message': 'Error', 
+                'status': 500, 
+                'success': false
+            });
+        } else {
+            res.status(200).send({
+                'message': 'Data deleted successfully', 
+                'status': 200, 
+                'success': true
+            });
+        }
+    });
+})
 const PORT = 5000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}` .red);
